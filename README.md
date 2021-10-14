@@ -9,3 +9,4 @@ Simple sketch for an Arduino Pro Micro interface.
 STILL TO DO:
 - potentiometer/loadcell selection via hardware switch
 - schematics
+- pull-down resistor per floating pin when no device connected
