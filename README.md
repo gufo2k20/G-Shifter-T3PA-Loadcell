@@ -8,3 +8,4 @@ Simple sketch for an Arduino Pro Micro interface.
 
 STILL TO DO:
 - potentiometer/loadcell selection via hardware switch
+- schematics
