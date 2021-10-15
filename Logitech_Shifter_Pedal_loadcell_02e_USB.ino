@@ -40,9 +40,9 @@ HX711 scale1;
 #define HS_YAXIS_246       300
 
 // Sequential shifter mode analog axis thresholds
-//------------------------------------------------------
-// MODIFY IN RELATION TO GEAR LEVER TRAVEL DISTANCE USED
-//------------------------------------------------------
+//-----------------------------------------------------------------------
+// MODIFY IN RELATION TO GEAR LEVER TRAVEL DISTANCE USED FOR SEQ SHIFTING
+//-----------------------------------------------------------------------
 #define SS_UPSHIFT_BEGIN   670
 #define SS_UPSHIFT_END     600
 #define SS_DOWNSHIFT_BEGIN 430
@@ -101,21 +101,6 @@ void setup() {
 }
 
 void loop() {
-/*
-  Serial.println(x);
-  Serial.print("X ");
-  Serial.println(y);
-  Serial.print("Y ");
-*/  
-/*
-  Serial.println (Freno_cella);
-  Serial.print("ACCELERATORE ");
-  Serial.print(g);
-  Serial.print("   FRENO   ");
-  Serial.print(Freno_cella);
-  Serial.print("  FRIZIONE   ");
-  Serial.println(z);
-*/
 
 // richiamo controllo pedaliera
 int T3PA_SWITCH_OLD;
