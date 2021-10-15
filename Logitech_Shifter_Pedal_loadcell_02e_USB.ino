@@ -1,30 +1,28 @@
+// partially based on
 
 //Logitech Driving Force Shifter USB Adapter 
 //By Armandoiglesias 2018
 //Based on Jason Duncan functionreturnfunction Project
-//Video tutorial https://www.youtube.com/watch?v=dLpWEu8kCec
-//Use Arduino Leonardo
-//Install Joystick Library 
+//.................
 //Attribution-NonCommercial-NoDerivatives 4.0 International
 
 #include <Joystick.h>
 #include <HX711.h>
 
-// creazione costanti pin cella di carico
+// loadcell PINs definition
 const int LOADCELL_DOUT_PIN1 = 3;
 const int LOADCELL_SCK_PIN1 = 5;
 
 long Freno_cella;
 
-// calibrazione range asse freno a cella
+// brake pedal loadcell range values
 const long ZonainferioreFreno = -2850;
 const long ZonasuperioreFreno = 12500;
 
-// fattore di calibrazione cella
+// loadcell calibration factor
 const long calibration_factor1 = 30;
 
 // Create the Joystick
-// Joystick_ Joystick;
 Joystick_ Joystick(JOYSTICK_DEFAULT_REPORT_ID, JOYSTICK_TYPE_GAMEPAD,
 12, 0,                 // pulsanti, hat switch
 false, false, false,   // X, Y, Z
@@ -32,6 +30,7 @@ false, false, false,   // Rx, Ry, Rz
 false, true,           // rudder, throttle
 true, true, false);    // accelerator, brake, steering
 
+// create the loadcell scale
 HX711 scale1;
 
 // H-shifter mode analog axis thresholds
@@ -41,6 +40,9 @@ HX711 scale1;
 #define HS_YAXIS_246       300
 
 // Sequential shifter mode analog axis thresholds
+//------------------------------------------------------
+// MODIFY IN RELATION TO GEAR LEVER TRAVEL DISTANCE USED
+//------------------------------------------------------
 #define SS_UPSHIFT_BEGIN   670
 #define SS_UPSHIFT_END     600
 #define SS_DOWNSHIFT_BEGIN 430
@@ -50,7 +52,7 @@ HX711 scale1;
 #define DI_REVERSE         1
 #define DI_MODE            3
  
-// Shifter state
+// Shifter state  (???, original code)
 #define DOWN_SHIFT         -1
 #define NO_SHIFT           0
 #define UP_SHIFT           1
@@ -67,13 +69,11 @@ int b[16];
 int gear=0;               // Default value for H shifter is neutral
 int gearSS=0;             // Default value for SEQ shifter is neutral
 
-// Constant that maps the phyical pin to the joystick button.
-// const int pinToButtonMap = 9;
-
 
 void setup() {
 
-  // switch brake pedal "LOADCELL" or "POT"
+ // --- TO DO hardware switch ---
+ // switch brake pedal "LOADCELL" or "POT" on PIN 7
   pinMode(7, INPUT_PULLUP);
   
   // loadcell HX711 brake pedal
@@ -89,6 +89,7 @@ void setup() {
   b[DI_MODE] =0;
   
   // Initialize Joystick Library
+  // GAS and CLUTCH potentiometers range
   Joystick.begin();
   Joystick.setThrottleRange (165,822);                              //CLUTCH
   Joystick.setAcceleratorRange (160,800);                           //GAS
@@ -135,7 +136,7 @@ if (T3PA_SWITCH == HIGH){
     T3PA_POT();
     }
 
-// richiamo controllo shifter
+// shifter mode selection
 int shiftmode_x=analogRead(1);       // X axis for shifter mode check
 int shiftmode_y=analogRead(0);       // Y axis for shifter mode check
 
@@ -156,15 +157,13 @@ if( shiftmode_press == 1 && (shiftmode_x>HS_XAXIS_12 && (shiftmode_x<HS_XAXIS_56
         }
   }
 
-//Serial.print(shiftSSmode);
-
+// Go to the selected shifter mode section (H or SS)
 if (shiftSSmode == 0) {
     SHIFTER_H();
     } else {
     SHIFTER_SS();
     }
 
-//Joystick.sendState();
   delay(15);
 }
 
@@ -176,15 +175,6 @@ void T3PA_LOADCELL(){
   Joystick.setThrottle(z);          //CLUTCH
   Joystick.setAccelerator(g);       //GAS
   Joystick.setBrake(Freno_cella);   //BRAKE CELLA DI CARICO
-/*
-  Serial.println (Freno_cella);
-  Serial.print("ACCELERATORE ");
-  Serial.print(g);
-  Serial.print("   FRENO   ");
-  Serial.print(Freno_cella);
-  Serial.print("  FRIZIONE   ");
-  Serial.println(z);
-*/
 }
 
 void T3PA_POT(){
@@ -255,16 +245,6 @@ if(_SSisreverse != 1 && ((SS_x>HS_XAXIS_12) && (SS_x<HS_XAXIS_56))) {
   }
   else _gearSS_ = 0;
   
-/*
-if(b[DI_MODE]==0)                      // H-shifter mode?
-{
-if(SS_x<HS_XAXIS_12 or (SS_x>HS_XAXIS_56)) // Shifter is NOT in the middle
-{
-_gearSS_ = 0;
-}
-else                                       // Shifter is in the middle
-*/
-
 if (_gearSS_ != 0){  
    if (_gearSS_ != gearSS){
           gearSS = _gearSS_;
@@ -277,11 +257,7 @@ if (_gearSS_ != 0){
    } else
      gearSS = _gearSS_;
      deactivate();
-     //Serial.println(gearSS);
      
-//Serial.print(_gearSS_);
-//Serial.print(" --- ");
-//Serial.println(gearSS);
 }
 
 void deactivate(){
